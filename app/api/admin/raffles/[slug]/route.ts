@@ -45,13 +45,14 @@ export async function PATCH(req:Request,{params}:{params:Promise<{slug:string}>}
     const {slug}=await params,b=await req.json(),db=adminSupabase(),r=await raffle(db,slug)
 
     // Cambios de estado son independientes de la edición de un borrador.
-    if(Object.keys(b).length===1&&'status' in b){
+    if(('status' in b)&&Object.keys(b).every(key=>key==='status'||key==='startNow')){
       const next=String(b.status)
       if(next==='open'&&r.status==='draft'){const {count}=await db.from('participants').select('*',{count:'exact',head:true}).eq('raffle_id',r.id).eq('is_test',true);if((count||0)>0)return NextResponse.json({ok:false,error:'Limpia los datos del modo prueba antes de activar la rifa.'},{status:400})}
       if(!['draft','open','closed'].includes(next))return NextResponse.json({ok:false,error:'Estado inválido.'},{status:400})
       if(r.status==='open'&&next==='draft')return NextResponse.json({ok:false,error:'Una rifa activa no puede volver a borrador.'},{status:400})
       if(r.status==='closed'&&next==='draft')return NextResponse.json({ok:false,error:'Una rifa cerrada no puede volver a borrador.'},{status:400})
-      const {data,error}=await db.from('raffles').update({status:next,updated_at:new Date().toISOString()}).eq('id',r.id).select().single();if(error)throw error
+      const startNow=next==='open'&&b.startNow===true
+      const {data,error}=await db.from('raffles').update({status:next,opens_at:startNow?null:r.opens_at,updated_at:new Date().toISOString()}).eq('id',r.id).select().single();if(error)throw error
       return NextResponse.json({ok:true,raffle:data})
     }
 
