@@ -56,6 +56,14 @@ export async function PATCH(req:Request,{params}:{params:Promise<{slug:string}>}
       return NextResponse.json({ok:true,raffle:data})
     }
 
+    if(r.status==='closed'&&Object.keys(b).every(key=>key==='opens_at'||key==='closes_at')){
+      const opensAt=b.opens_at||null,closesAt=b.closes_at||null,validationError=raffleValidationError(r.reserve_minutes,opensAt,closesAt)
+      if(validationError)return NextResponse.json({ok:false,error:validationError},{status:400})
+      const {data,error}=await db.from('raffles').update({opens_at:opensAt,closes_at:closesAt,updated_at:new Date().toISOString()}).eq('id',r.id).select().single()
+      if(error)throw error
+      return NextResponse.json({ok:true,raffle:data})
+    }
+
     if(r.status!=='draft')return NextResponse.json({ok:false,error:'Solo puedes editar una rifa mientras está en borrador.'},{status:400})
 
     const newSlug='slug' in b?cleanSlug(b.slug):r.slug
