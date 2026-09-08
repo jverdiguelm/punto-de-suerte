@@ -1,0 +1,1 @@
+export default function BrandHeader(){return <header className="siteHeader"><a className="brand" href="/"><span className="brandMark">●</span><span><b>PUNTO DE SUERTE</b><small>Elige tu número. Puede ser el tuyo.</small></span></a><nav><a href="/#rifas">Rifas</a><a href="/como-funciona">Cómo funciona</a></nav></header>}

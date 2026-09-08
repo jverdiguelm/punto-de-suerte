@@ -1,0 +1,2 @@
+import BrandHeader from '@/components/BrandHeader'
+export default function NotFound(){return <main className="wrap"><BrandHeader/><section className="card emptyState"><span className="badge">404</span><h1>Esta rifa no está disponible</h1><p className="muted">Puede que todavía no esté publicada, haya finalizado o el enlace sea incorrecto.</p><a className="btn" href="/">Ver rifas disponibles</a></section></main>}
