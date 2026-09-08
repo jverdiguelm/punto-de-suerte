@@ -56,6 +56,15 @@ export async function PATCH(req:Request,{params}:{params:Promise<{slug:string}>}
       return NextResponse.json({ok:true,raffle:data})
     }
 
+    if(Object.keys(b).length===1&&b.resetToDraft===true){
+      if(r.status!=='closed')return NextResponse.json({ok:false,error:'Solo puedes restablecer una rifa cerrada.'},{status:400})
+      const {data,error}=await db.rpc('reset_raffle_to_draft',{p_slug:slug})
+      if(error)throw error
+      if(!data?.ok)return NextResponse.json(data,{status:400})
+      const updated=await raffle(db,slug)
+      return NextResponse.json({ok:true,raffle:updated})
+    }
+
     if(r.status==='closed'&&Object.keys(b).every(key=>key==='opens_at'||key==='closes_at')){
       const opensAt=b.opens_at||null,closesAt=b.closes_at||null,validationError=raffleValidationError(r.reserve_minutes,opensAt,closesAt)
       if(validationError)return NextResponse.json({ok:false,error:validationError},{status:400})

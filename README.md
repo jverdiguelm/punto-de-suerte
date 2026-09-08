@@ -29,8 +29,8 @@ Agrega a `.env.local`:
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-## Migración v1.0
-En una base creada desde v0.9, ejecuta **solo** `supabase/migration-v1.0.sql` en Supabase SQL Editor. No repitas `schema.sql` ni migraciones anteriores.
+## Migraciones v1.x
+En una base creada desde v0.9, ejecuta `supabase/migration-v1.0.sql` y después `supabase/migration-v1.1.sql` en Supabase SQL Editor. No repitas `schema.sql` ni migraciones anteriores.
 
 ## Probar
 ```bash
